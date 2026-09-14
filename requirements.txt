@@ -7,10 +7,12 @@ evaluate==0.4.0
 rouge_score==0.1.2
 loralib==0.1.1
 peft==0.3.0
-# pinned: sentence-transformers 2.2.2 imports huggingface_hub.cached_download,
-# which newer huggingface_hub releases removed
-sentence-transformers==2.2.2
-huggingface_hub==0.16.4
+# pinned: peft pulls in a modern `accelerate`, which needs huggingface_hub
+# functions (e.g. split_torch_state_dict_into_shards) that only exist from
+# ~0.23+ - older sentence-transformers/huggingface_hub pins conflict with
+# that and crash on the first real model load (AutoModel.from_pretrained).
+sentence-transformers==2.7.0
+huggingface_hub==0.25.2
 
 # --- RAG chatbot app (app/) ---
 streamlit==1.38.0
@@ -23,6 +25,3 @@ langchain-ollama==0.2.1
 langchain-chroma==0.1.4
 langchain-text-splitters==0.3.2
 chromadb==0.5.20
-
-# --- Tests ---
-pytest==8.3.3

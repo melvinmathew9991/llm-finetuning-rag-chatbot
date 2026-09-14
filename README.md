@@ -16,7 +16,9 @@ The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT
 .
 ├── README.md
 ├── requirements.txt
+├── requirements-dev.txt         # Adds pytest on top of requirements.txt
 ├── .gitignore
+├── .gitattributes
 ├── .env.example
 ├── app/                         # Streamlit RAG shopping chatbot, as a package
 │   ├── main.py                  #   Streamlit UI / entry point
@@ -33,19 +35,26 @@ The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT
 │       ├── apparel_products.txt
 │       └── paper_products.txt
 ├── models/
-│   ├── full/                   # Full fine-tuned FLAN-T5-base checkpoint
+│   ├── full/                   # Full fine-tuned FLAN-T5-base checkpoint (config only - see note)
 │   └── peft/                   # LoRA/PEFT adapter checkpoint
 ├── assets/
 │   └── images/                 # Diagrams referenced by the notebook
 └── docs/
-    ├── LLM+1+Presentation.pdf
+    ├── llm-presentation.pdf
     └── llm-finetuning-solution-methodology.pdf
 ```
 
-> Note: `models/` contains multi-gigabyte training checkpoints (`optimizer.pt`,
-> `scheduler.pt`, `rng_state.pth`). These are excluded via `.gitignore` since
-> they're reproducible by re-running the fine-tuning cells in the notebook —
-> only the model weights/config themselves are needed for inference.
+> Note: `models/` only tracks what's small and either directly useful or
+> documents the setup: configs, LoRA hyperparameters, and the LoRA adapter
+> weights themselves (`models/peft/adapter_model.bin`, ~14MB). Everything
+> else - optimizer/scheduler/rng state, the full fine-tune's 990MB
+> `pytorch_model.bin`, and the raw per-step training logs - is gitignored:
+> reproducible by re-running the fine-tuning cells in the notebook, not
+> needed for inference, and (for `training_args.bin`) a pickle file with
+> no real reason to carry it in version control. **This means
+> `models/full/` alone cannot be loaded as-is from a fresh clone** — you
+> need to actually run the full fine-tuning cells in the notebook (see
+> "Fine-tuning" below) to regenerate `pytorch_model.bin`.
 
 ## Execution Instructions
 
@@ -75,6 +84,18 @@ If you have multiple Python versions installed, use the Python Launcher to targe
 - Linux/Mac: `python3.8 -m venv myenv`
 
 then activate and `pip install -r requirements.txt` as above.
+
+Running tests needs the dev extras too: `pip install -r requirements-dev.txt`.
+
+> **Windows long paths**: if your project lives at a deeply nested path
+> (long folder names, especially with spaces), `pip install` can fail with
+> `OSError: [Errno 2] No such file or directory` on packages that have deeply
+> nested files (`transformers` is a common one), because Windows' default
+> 260-character path limit gets exceeded once combined with the venv's own
+> `site-packages` path. Either [enable Windows long path support](https://pip.pypa.io/warnings/enable-long-paths)
+> (one-time, needs admin), or create the venv somewhere shorter (e.g.
+> `C:\envs\<project>`) and point it at this project instead of creating it
+> inside the project folder.
 
 ### Running the project
 
@@ -145,5 +166,30 @@ newly selected provider.
 ### Running tests
 
 ```
+pip install -r requirements-dev.txt
 pytest
 ```
+
+### Fine-tuning
+
+`notebooks/llm_labs.ipynb` walks through both full fine-tuning and
+LoRA/PEFT of `google/flan-t5-base` on the `knkarthick/dialogsum` dataset.
+**Important**: the notebook's own `Trainer.train()` calls are capped at
+`max_steps=1` (a smoke test that the training loop runs), then it loads
+the already-trained checkpoints from `models/full/` / `models/peft/` for
+the evaluation cells - running the notebook top-to-bottom as-is will
+**not** reproduce those checkpoints (and `models/full/pytorch_model.bin`
+isn't tracked in git at all - see the note on `models/` above).
+
+To actually fine-tune for real:
+1. Remove `max_steps=1` from the relevant `TrainingArguments` cells and
+   set real values (e.g. `num_train_epochs=3-5`)
+2. Optionally loosen the `% 100 == 0` dataset subsampling filter to train
+   on more than ~124 examples
+3. After `trainer.train()`, explicitly save the result -
+   `trainer.save_model('../models/full/')` and
+   `tokenizer.save_pretrained('../models/full/')` (or a new path) - the
+   notebook doesn't currently do this, since it expects a checkpoint to
+   already exist
+4. Re-run the qualitative and ROUGE evaluation cells to compare against
+   the base model

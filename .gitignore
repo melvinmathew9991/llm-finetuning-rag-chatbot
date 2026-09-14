@@ -1,6 +1,7 @@
 # Python
 __pycache__/
 *.pyc
+.pytest_cache/
 myenv/
 .venv/
 venv/
@@ -12,20 +13,28 @@ venv/
 .DS_Store
 Thumbs.db
 
-# Runtime artifacts created by app/llm_app.py
+# Logs
+*.log
+
+# Runtime artifacts created by app/main.py
 tmp/
 chroma_db/
 
 # Secrets
 .env
 
-# Large trained model checkpoints (optimizer/scheduler state and the full
-# fine-tuned weights are huge and reproducible from notebooks/llm_labs.ipynb -
-# track with Git LFS instead of plain git if these need to be versioned).
+# Large/low-value trained model checkpoints (optimizer/scheduler state, the
+# full fine-tuned weights, and raw per-step training logs) - all reproducible
+# from notebooks/llm_labs.ipynb, not needed for inference. Track with Git LFS
+# instead of plain git if the weight files need to be versioned.
 models/full/optimizer.pt
 models/full/scheduler.pt
 models/full/rng_state.pth
 models/full/pytorch_model.bin
+models/full/trainer_state.json
+models/full/training_args.bin
 models/peft/optimizer.pt
 models/peft/scheduler.pt
 models/peft/rng_state.pth
+models/peft/trainer_state.json
+models/peft/training_args.bin
