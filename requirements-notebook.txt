@@ -1,0 +1,14 @@
+# --- Fine-tuning notebook stack (notebooks/llm_labs.ipynb) ---
+transformers==4.33.3
+datasets==2.14.5
+torchdata==0.6.1
+torch==2.0.1
+evaluate==0.4.0
+rouge_score==0.1.2
+loralib==0.1.1
+peft==0.3.0
+# pinned: peft pulls in a modern `accelerate`, which needs huggingface_hub
+# functions (e.g. split_torch_state_dict_into_shards) that only exist from
+# ~0.23+ - older pins conflict with that and crash on the first real model
+# load (AutoModel.from_pretrained).
+huggingface_hub==0.25.2

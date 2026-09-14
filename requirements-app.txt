@@ -1,0 +1,17 @@
+# --- RAG chatbot app (app/) ---
+streamlit==1.38.0
+python-dotenv==1.0.1
+requests==2.32.3
+langchain==0.3.7
+langchain-community==0.3.7
+langchain-openai==0.2.9
+langchain-ollama==0.2.1
+langchain-chroma==0.1.4
+langchain-text-splitters==0.3.2
+chromadb==0.5.20
+# pinned: sentence-transformers pulls in accelerate, which needs
+# huggingface_hub functions (e.g. split_torch_state_dict_into_shards) that
+# only exist from ~0.23+ - older pins conflict with that and crash on the
+# first real model load (AutoModel.from_pretrained).
+sentence-transformers==2.7.0
+huggingface_hub==0.25.2

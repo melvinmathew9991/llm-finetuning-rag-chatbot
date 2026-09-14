@@ -1,6 +1,26 @@
 import os
 
-from app.ingestion import load_docs, split_docs
+from app.ingestion import ensure_default_kb, load_docs, split_docs
+
+
+def test_ensure_default_kb_seeds_from_source(tmp_path):
+    source = tmp_path / "kb"
+    source.mkdir()
+    (source / "a.txt").write_text("hello")
+    target = tmp_path / "tmp"
+
+    ensure_default_kb(str(target), str(source))
+
+    assert (target / "a.txt").read_text() == "hello"
+
+
+def test_ensure_default_kb_noop_if_target_exists(tmp_path):
+    target = tmp_path / "tmp"
+    target.mkdir()
+
+    ensure_default_kb(str(target), str(tmp_path / "missing_source"))
+
+    assert list(target.iterdir()) == []
 
 
 def test_load_docs_reads_kb_txt_files():

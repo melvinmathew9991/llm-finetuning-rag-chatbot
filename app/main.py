@@ -9,6 +9,7 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from app.config import load_settings
+from app.ingestion import ensure_default_kb
 from app.providers import ProviderError
 from app.rag import build_qa_chain, build_vector_db, get_answer
 
@@ -17,6 +18,7 @@ load_dotenv()
 st.title("Hi, I'm your Shopping ChatBot!")
 
 settings = load_settings()
+ensure_default_kb(settings.tmp_dir, settings.kb_source_dir)
 
 UPLOAD_NEW = "Upload new one"
 ALREADY_UPLOADED = "Already Uploaded"

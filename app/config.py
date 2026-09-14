@@ -17,6 +17,7 @@ class Settings:
     chunk_overlap: int
     tmp_dir: str
     persist_dir: str
+    kb_source_dir: str
 
 
 def load_settings() -> Settings:
@@ -36,4 +37,5 @@ def load_settings() -> Settings:
         chunk_overlap=int(os.environ.get("CHUNK_OVERLAP", "20")),
         tmp_dir=os.environ.get("KB_TMP_DIR", "tmp"),
         persist_dir=os.environ.get("CHROMA_PERSIST_DIR", "chroma_db"),
+        kb_source_dir=os.environ.get("KB_SOURCE_DIR", "data/kb"),
     )

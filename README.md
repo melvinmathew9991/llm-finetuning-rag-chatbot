@@ -15,8 +15,12 @@ The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT
 ```
 .
 ├── README.md
-├── requirements.txt
-├── requirements-dev.txt         # Adds pytest on top of requirements.txt
+├── pyproject.toml               # Project metadata + pytest config
+├── requirements.txt             # Full install: notebook + app
+├── requirements-notebook.txt    # Fine-tuning notebook stack only (heavy: torch, transformers...)
+├── requirements-app.txt         # RAG chatbot app stack only (lightweight)
+├── requirements-dev.txt         # Adds pytest on top of requirements-app.txt
+├── .github/workflows/tests.yml  # CI: runs pytest on push/PR
 ├── .gitignore
 ├── .gitattributes
 ├── .env.example
@@ -57,14 +61,24 @@ The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT
 
 ### Python version 3.8.10
 
-To create a virtual environment and install requirements:
+To create a virtual environment and install requirements, pick the file that
+matches what you want to run - installing only what you need avoids pulling
+in the multi-GB fine-tuning stack (torch, transformers, datasets, peft, ...)
+just to run the chatbot:
+
+| Want to...                          | Install                       |
+|--------------------------------------|--------------------------------|
+| Run the RAG chatbot app only         | `requirements-app.txt`         |
+| Run the fine-tuning notebook only    | `requirements-notebook.txt`    |
+| Both                                  | `requirements.txt`             |
+| Run the test suite (needs the app)   | `requirements-dev.txt`         |
 
 **Windows:**
 ```
 cd "C:\path\to\project"
 python -m venv myenv
 myenv\Scripts\activate
-pip install -r requirements.txt
+pip install -r requirements-app.txt
 ```
 
 **Linux/Mac:**
@@ -72,7 +86,7 @@ pip install -r requirements.txt
 cd /path/to/project
 python3 -m venv myenv
 source myenv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-app.txt
 ```
 
 If you have multiple Python versions installed, use the Python Launcher to target 3.8.10 specifically:
@@ -80,7 +94,7 @@ If you have multiple Python versions installed, use the Python Launcher to targe
 - Windows: `py -3.8 -m venv myenv`
 - Linux/Mac: `python3.8 -m venv myenv`
 
-then activate and `pip install -r requirements.txt` as above.
+then activate and install the requirements file for what you're running, as above.
 
 Running tests needs the dev extras too: `pip install -r requirements-dev.txt`.
 
@@ -96,8 +110,9 @@ Running tests needs the dev extras too: `pip install -r requirements-dev.txt`.
 
 ### Running the project
 
-Run the main notebook (from the project root, so its relative paths to
-`assets/images` and `models/` resolve correctly):
+Run the main notebook (needs `requirements-notebook.txt` installed; from the
+project root, so its relative paths to `assets/images` and `models/` resolve
+correctly):
 
 ```
 jupyter notebook notebooks/llm_labs.ipynb

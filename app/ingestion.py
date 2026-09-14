@@ -1,7 +1,17 @@
 """Loading and chunking the knowledge-base text files."""
 
+import os
+import shutil
+
 from langchain_community.document_loaders import DirectoryLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+
+def ensure_default_kb(tmp_dir: str, source_dir: str) -> None:
+    """Seed tmp_dir from the bundled sample knowledge base on first run."""
+    if os.path.exists(tmp_dir) or not os.path.isdir(source_dir):
+        return
+    shutil.copytree(source_dir, tmp_dir)
 
 
 def load_docs(directory: str):

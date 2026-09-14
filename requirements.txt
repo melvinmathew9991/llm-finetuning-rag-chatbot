@@ -1,27 +1,5 @@
-# --- Fine-tuning notebook stack (notebooks/llm_labs.ipynb) ---
-transformers==4.33.3
-datasets==2.14.5
-torchdata==0.6.1
-torch==2.0.1
-evaluate==0.4.0
-rouge_score==0.1.2
-loralib==0.1.1
-peft==0.3.0
-# pinned: peft pulls in a modern `accelerate`, which needs huggingface_hub
-# functions (e.g. split_torch_state_dict_into_shards) that only exist from
-# ~0.23+ - older sentence-transformers/huggingface_hub pins conflict with
-# that and crash on the first real model load (AutoModel.from_pretrained).
-sentence-transformers==2.7.0
-huggingface_hub==0.25.2
-
-# --- RAG chatbot app (app/) ---
-streamlit==1.38.0
-python-dotenv==1.0.1
-requests==2.32.3
-langchain==0.3.7
-langchain-community==0.3.7
-langchain-openai==0.2.9
-langchain-ollama==0.2.1
-langchain-chroma==0.1.4
-langchain-text-splitters==0.3.2
-chromadb==0.5.20
+# Full install - both the fine-tuning notebook and the RAG chatbot app.
+# Only need one of the two? Install requirements-notebook.txt or
+# requirements-app.txt directly instead - it's a much lighter install.
+-r requirements-notebook.txt
+-r requirements-app.txt
