@@ -17,8 +17,14 @@ The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
-├── app/
-│   └── llm_app.py              # Streamlit RAG shopping chatbot
+├── .env.example
+├── app/                         # Streamlit RAG shopping chatbot, as a package
+│   ├── main.py                  #   Streamlit UI / entry point
+│   ├── config.py                #   Settings read from environment variables
+│   ├── providers.py             #   OpenAI <-> local Ollama model selection
+│   ├── ingestion.py             #   Load + chunk the knowledge-base docs
+│   └── rag.py                   #   Vector store + retrieval-QA chain
+├── tests/                       # pytest unit tests for app/
 ├── notebooks/
 │   └── llm_labs.ipynb          # Main walkthrough: fundamentals -> prompting ->
 │                                # full fine-tuning -> LoRA/PEFT -> RAG
@@ -83,12 +89,21 @@ Run the RAG shopping chatbot (also from the project root — it creates
 `tmp/` and `chroma_db/` working directories there):
 
 ```
-streamlit run app/llm_app.py
+streamlit run app/main.py
 ```
 
-Before running the chatbot, provide your OpenAI API key — never edit it
-directly into `app/llm_app.py`. The app loads it via `python-dotenv`, so
-the simplest way is a `.env` file in the project root:
+### Model provider: OpenAI API or local Ollama
+
+The chatbot's chat model can come from either OpenAI's API or a locally
+running [Ollama](https://ollama.com) server — pick per-session from the
+sidebar radio button, or set a default with `LLM_PROVIDER` in `.env`.
+Embeddings always run locally via `sentence-transformers`
+(`all-MiniLM-L6-v2`) regardless of which chat provider you pick, so no
+API key or Ollama model is needed just to build the vector index.
+
+**OpenAI API** (default) — provide your API key, never edit it directly
+into the app code. It loads via `python-dotenv`, so the simplest way is a
+`.env` file in the project root:
 
 ```
 cp .env.example .env
@@ -105,4 +120,30 @@ $env:OPENAI_API_KEY = "sk-..."
 
 # Linux/Mac
 export OPENAI_API_KEY="sk-..."
+```
+
+**Local Ollama** — no API key needed, but [install Ollama](https://ollama.com/download),
+start the server, and pull a model first:
+
+```
+ollama serve
+ollama pull llama3
+```
+
+Then in `.env` (or as env vars) set:
+
+```
+LLM_PROVIDER=ollama
+OLLAMA_MODEL=llama3
+OLLAMA_BASE_URL=http://localhost:11434   # default, only needed if Ollama runs elsewhere
+```
+
+You can still switch providers per-session from the sidebar without
+restarting the app — switching rebuilds the vector store/chain for the
+newly selected provider.
+
+### Running tests
+
+```
+pytest
 ```

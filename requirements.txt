@@ -1,22 +1,28 @@
+# --- Fine-tuning notebook stack (notebooks/llm_labs.ipynb) ---
 transformers==4.33.3
 datasets==2.14.5
 torchdata==0.6.1
 torch==2.0.1
-streamlit==1.27.0
-python-dotenv==1.0.0
-openai==0.28.1
-langchain==0.0.304
-# pinned: unstructured 0.10.16 downloads NLTK's old unsuffixed resource
-# names (e.g. averaged_perceptron_tagger); newer nltk looks up the
-# language-suffixed names (averaged_perceptron_tagger_eng) instead
-nltk==3.8.1
-unstructured==0.10.16
-sentence-transformers==2.2.2
-# pinned: sentence-transformers 2.2.2 imports huggingface_hub.cached_download,
-# which newer huggingface_hub releases removed
-huggingface_hub==0.16.4
-chromadb==0.4.13
 evaluate==0.4.0
 rouge_score==0.1.2
 loralib==0.1.1
 peft==0.3.0
+# pinned: sentence-transformers 2.2.2 imports huggingface_hub.cached_download,
+# which newer huggingface_hub releases removed
+sentence-transformers==2.2.2
+huggingface_hub==0.16.4
+
+# --- RAG chatbot app (app/) ---
+streamlit==1.38.0
+python-dotenv==1.0.1
+requests==2.32.3
+langchain==0.3.7
+langchain-community==0.3.7
+langchain-openai==0.2.9
+langchain-ollama==0.2.1
+langchain-chroma==0.1.4
+langchain-text-splitters==0.3.2
+chromadb==0.5.20
+
+# --- Tests ---
+pytest==8.3.3
