@@ -24,6 +24,9 @@ chroma_db/
 # Secrets
 .env
 
+# Internal project report - not for the public repo
+docs/report.md
+
 # Large/low-value trained model checkpoints (optimizer/scheduler state, the
 # full fine-tuned weights, and raw per-step training logs) - all reproducible
 # from notebooks/llm_labs.ipynb, not needed for inference. Track with Git LFS
