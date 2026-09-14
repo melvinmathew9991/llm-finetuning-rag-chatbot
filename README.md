@@ -10,6 +10,16 @@ Fine-tuning entails training a pre-trained language model on a specific task or 
 
 The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT-3.5 Turbo, resulting in a knowledge-grounded chatbot for online shopping. Knowledge grounding with RAG mitigates hallucinations and provides trustworthy responses by incorporating information from external sources to validate and support generated text. For example, in an e-commerce chatbot, RAG ensures product information, availability, and prices are sourced from a trusted knowledge base rather than invented by the model.
 
+## Tech Stack
+
+- **Language:** Python 3.8
+- **Fine-tuning:** PyTorch, Hugging Face `transformers`, `datasets`, `evaluate`/`rouge_score`, `peft`/`loralib` (LoRA)
+- **Base model:** `google/flan-t5-base`
+- **RAG / chatbot:** LangChain (`langchain`, `langchain-community`, `langchain-openai`, `langchain-ollama`, `langchain-chroma`, `langchain-text-splitters`), ChromaDB (vector store), `sentence-transformers` (`all-MiniLM-L6-v2` embeddings)
+- **LLM providers:** OpenAI API (GPT-3.5 Turbo) or local Ollama
+- **App/UI:** Streamlit
+- **Testing/CI:** pytest, GitHub Actions
+
 ## Project Structure
 
 ```
