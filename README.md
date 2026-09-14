@@ -37,11 +37,8 @@ The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT
 ├── models/
 │   ├── full/                   # Full fine-tuned FLAN-T5-base checkpoint (config only - see note)
 │   └── peft/                   # LoRA/PEFT adapter checkpoint
-├── assets/
-│   └── images/                 # Diagrams referenced by the notebook
-└── docs/
-    ├── llm-presentation.pdf
-    └── llm-finetuning-solution-methodology.pdf
+└── assets/
+    └── images/                 # Diagrams referenced by the notebook
 ```
 
 > Note: `models/` only tracks what's small and either directly useful or
