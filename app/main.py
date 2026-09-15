@@ -38,6 +38,16 @@ def _load_db_and_chain(cache_key: str, settings):
     return db, chain
 
 
+def _render_sources(sources: list) -> None:
+    if not sources:
+        return
+    with st.expander(f"Sources ({len(sources)})"):
+        for source in sources:
+            label = source["metadata"].get("source", "unknown")
+            st.markdown(f"**{label}** (score: {source['score']:.4f})")
+            st.text(source["content"])
+
+
 def start_chatbot(settings, cache_key: str):
     try:
         db, chain = _load_db_and_chain(cache_key, settings)
@@ -51,6 +61,7 @@ def start_chatbot(settings, cache_key: str):
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
+            _render_sources(message.get("sources", []))
 
     if prompt := st.chat_input("What is up?"):
         st.session_state.messages.append({"role": "user", "content": prompt})
@@ -61,8 +72,12 @@ def start_chatbot(settings, cache_key: str):
             message_placeholder = st.empty()
             full_response = get_answer(st.session_state.messages[-1]["content"], db, chain)
             answer = full_response["answer"]
+            sources = full_response["sources"]
             message_placeholder.markdown(answer)
-            st.session_state.messages.append({"role": "assistant", "content": answer})
+            _render_sources(sources)
+            st.session_state.messages.append(
+                {"role": "assistant", "content": answer, "sources": sources}
+            )
 
 
 content_type = st.sidebar.radio(
