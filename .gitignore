@@ -6,6 +6,7 @@ __pycache__/
 myenv/
 .venv/
 .venv-nb/
+.venv-eval/
 venv/
 
 # Jupyter

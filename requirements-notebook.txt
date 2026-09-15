@@ -12,3 +12,18 @@ peft==0.3.0
 # ~0.23+ - older pins conflict with that and crash on the first real model
 # load (AutoModel.from_pretrained).
 huggingface_hub==0.25.2
+# pinned: none of the above pin accelerate/numpy/pyarrow, so an unconstrained
+# install on a current Python grabs versions from ~2024-2025 that these
+# 2023-era libraries weren't built against:
+#  - accelerate>=1.0's Accelerator dropped/changed kwargs transformers
+#    4.33.3's Trainer still passes (`dispatch_batches`), raising
+#    `TypeError: Accelerator.__init__() got an unexpected keyword argument`
+#    on the very first Trainer(...) call - needs a contemporaneous accelerate.
+#  - numpy 2.x breaks pyarrow's compiled extension (`_ARRAY_API not found`),
+#    which datasets imports transitively just to load_dataset(...).
+#  - pyarrow>=14 removed `PyExtensionType`, which datasets==2.14.5 still uses.
+# Verified together with huggingface_hub==0.25.2 above (real training run,
+# not just import) - no pip-check conflicts.
+accelerate==0.21.0
+numpy==1.26.4
+pyarrow==13.0.0
