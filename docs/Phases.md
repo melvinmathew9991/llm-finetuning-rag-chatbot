@@ -33,18 +33,19 @@ PR — proper per-phase, per-task SDLC instead of committing straight to `main`:
 - Pushed to GitHub under the owner's own account; scrubbed AI attribution
   from all commit history
 
-## Phase 1 — Quick wins
+## Phase 1 — Quick wins — Done
 
-Low effort, no architectural change. Good next PRs.
+Low effort, no architectural change.
 
-- [ ] Show retrieved sources/citations in the chat UI (`get_answer` already
-      returns them — `app/rag.py:29-32` — `main.py` just doesn't render them)
-- [ ] Add conversation memory so follow-up questions keep context (currently
-      only `messages[-1]` is answered — `app/main.py:62`)
-- [ ] Increase chunk overlap (`CHUNK_OVERLAP`, currently 20 on a 1000-char
-      chunk — thin) and validate against the actual KB content
-- [ ] Add `tests/test_rag.py` covering `build_vector_db` / `get_answer`
-      against a stub/in-memory vector store
+- [x] Add `tests/test_rag.py` covering `build_vector_db` / `get_answer`
+      against a stub/in-memory vector store (PR #1, `phase-1/add-rag-tests`)
+- [x] Show retrieved sources/citations in the chat UI (PR #2,
+      `phase-1/citations-ui`)
+- [x] Increase chunk overlap (`CHUNK_OVERLAP` 20 → 150) and validate against
+      real content (PR #3, `phase-1/chunk-overlap-tuning`)
+- [x] Add conversation memory so follow-up questions keep context, via a
+      condense-question step before retrieval (PR #4,
+      `phase-1/conversation-memory`)
 
 ## Phase 2 — Make fine-tuning real, add RAG evaluation
 
