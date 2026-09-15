@@ -4,7 +4,21 @@ Breaking remaining work into stages. Phase 0 is already done (for context);
 Phases 1-3 are the active roadmap, ordered by effort and dependency, not
 strictly by priority — see notes per phase.
 
-## Phase 0 — Done
+## Branching convention
+
+Starting with Phase 1, each phase is developed on its own branch off `master`
+and merged back via PR — proper per-phase SDLC instead of committing straight
+to `master`:
+
+- `phase-0` — tags everything done before this convention started (see below).
+  Branched from and identical to `master` at the time it was cut.
+- `phase-1`, `phase-2`, `phase-3`, ... — one branch per phase above. Work for
+  that phase happens there; open a PR into `master` when the phase's items are
+  done (or a meaningful subset), review, then merge.
+- Branch off `master` (not the previous phase branch) unless a phase explicitly
+  depends on unmerged work from the one before it.
+
+## Phase 0 — Done (branch: `phase-0`)
 
 - Initial import: fine-tuning notebook + RAG chatbot app
 - Restructured `app/` into a proper package with an OpenAI/Ollama provider
