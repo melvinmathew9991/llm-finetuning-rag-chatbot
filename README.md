@@ -195,19 +195,25 @@ pytest
 ### Fine-tuning
 
 `notebooks/llm_labs.ipynb` walks through both full fine-tuning and
-LoRA/PEFT of `google/flan-t5-base` on the `knkarthick/dialogsum` dataset.
-**Important**: the notebook's own `Trainer.train()` calls are capped at
-`max_steps=1` (a smoke test that the training loop runs), then it loads
-the already-trained checkpoints from `models/full/` / `models/peft/` for
-the evaluation cells - running the notebook top-to-bottom as-is will
-**not** reproduce those checkpoints (and `models/full/pytorch_model.bin`
-isn't tracked in git at all - see the note on `models/` above).
+LoRA/PEFT of `google/flan-t5-base` on the `knkarthick/dialogsum` dataset,
+subsampled to every 20th row (~623 training examples). **Important**: the
+notebook's own `Trainer.train()` calls are capped at `max_steps=1` (a
+smoke test that the training loop runs), then it loads the already-trained
+checkpoints from `models/full/` / `models/peft/` for the evaluation cells -
+running the notebook top-to-bottom as-is will **not** reproduce those
+checkpoints (and `models/full/pytorch_model.bin` isn't tracked in git at
+all - see the note on `models/` above).
 
 To actually fine-tune for real:
-1. Remove `max_steps=1` from the relevant `TrainingArguments` cells and
-   set real values (e.g. `num_train_epochs=3-5`)
-2. Optionally loosen the `% 100 == 0` dataset subsampling filter to train
-   on more than ~124 examples
+1. Set the `REAL_TRAINING=1` environment variable before launching Jupyter
+   (e.g. `REAL_TRAINING=1 jupyter notebook`) - both `TrainingArguments`
+   cells use it to swap `max_steps=1` for their real `num_train_epochs`
+   (1 for the full fine-tune, 20 for PEFT/LoRA). On CPU, the full fine-tune
+   takes roughly an hour; the PEFT cell will take considerably longer -
+   reduce `num_train_epochs` if you just want to confirm training works
+   end-to-end
+2. Optionally loosen the `% 20 == 0` dataset subsampling filter further to
+   train on more than ~623 examples
 3. After `trainer.train()`, explicitly save the result -
    `trainer.save_model('../models/full/')` and
    `tokenizer.save_pretrained('../models/full/')` (or a new path) - the
