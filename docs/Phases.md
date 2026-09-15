@@ -6,17 +6,19 @@ strictly by priority — see notes per phase.
 
 ## Branching convention
 
-Starting with Phase 1, each phase is developed on its own branch off `master`
-and merged back via PR — proper per-phase SDLC instead of committing straight
-to `master`:
+Starting with Phase 1, work happens on branches off `main` and merges back via
+PR — proper per-phase, per-task SDLC instead of committing straight to `main`:
 
 - `phase-0` — tags everything done before this convention started (see below).
-  Branched from and identical to `master` at the time it was cut.
-- `phase-1`, `phase-2`, `phase-3`, ... — one branch per phase above. Work for
-  that phase happens there; open a PR into `master` when the phase's items are
-  done (or a meaningful subset), review, then merge.
-- Branch off `master` (not the previous phase branch) unless a phase explicitly
-  depends on unmerged work from the one before it.
+  Branched from and identical to `main` at the time it was cut.
+- Each phase's items are built one per branch: `phase-<n>/<task-slug>` (e.g.
+  `phase-1/add-rag-tests`, `phase-1/citations-ui`). Each task branch gets its
+  own PR into `main`, reviewed and merged independently — keeps diffs small
+  and bisectable instead of bundling a whole phase into one PR.
+- Branch off `main` (not another in-flight task branch) unless a task
+  explicitly depends on unmerged work from another one in the same phase.
+- Tick the item off in the phase's checklist below with the merging PR/commit
+  once its branch is merged.
 
 ## Phase 0 — Done (branch: `phase-0`)
 
