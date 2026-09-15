@@ -5,6 +5,8 @@ __pycache__/
 *.egg-info/
 myenv/
 .venv/
+.venv-nb/
+.venv-eval/
 venv/
 
 # Jupyter
