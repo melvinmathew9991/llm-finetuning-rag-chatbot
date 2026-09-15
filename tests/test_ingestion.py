@@ -1,5 +1,7 @@
 import os
 
+from langchain_core.documents import Document
+
 from app.ingestion import ensure_default_kb, load_docs, split_docs
 
 
@@ -35,3 +37,15 @@ def test_split_docs_respects_chunk_size():
     chunks = split_docs(documents, chunk_size=200, chunk_overlap=20)
     assert len(chunks) >= len(documents)
     assert all(len(chunk.page_content) <= 200 for chunk in chunks)
+
+
+def test_split_docs_overlap_produces_overlapping_chunks():
+    # The bundled sample KB is smaller than chunk_size, so it never exercises
+    # overlap - use synthetic text long enough to force multiple chunks.
+    text = "abcdefghij" * 100
+    documents = [Document(page_content=text)]
+
+    chunks = split_docs(documents, chunk_size=200, chunk_overlap=50)
+
+    assert len(chunks) > 1
+    assert chunks[0].page_content[-50:] == chunks[1].page_content[:50]
