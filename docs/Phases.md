@@ -51,18 +51,21 @@ Low effort, no architectural change.
 
 Medium effort. Depends on nothing in Phase 1; can run in parallel.
 
-- [ ] Un-stub the notebook training: remove/parameterize `max_steps=1` for a
+- [x] Un-stub the notebook training: remove/parameterize `max_steps=1` for a
       real run (documented opt-in per `Rules.md`), on a larger sample of
-      `dialogsum` than the current ~124-row subsample
+      `dialogsum` than the current ~124-row subsample (PR #6,
+      `phase-2/enable-real-training`; subsample loosened from every 100th
+      row to every 20th, ~623 rows, in a follow-up commit on main)
 - [ ] Run a small LoRA sweep (`r`, `target_modules`, alpha/r ratio) and log
       ROUGE vs. trainable-param% in the notebook as a comparison table
 - [ ] Try QLoRA (4-bit base + LoRA) as an additional efficiency comparison
-- [ ] Add a RAG evaluation harness (e.g. RAGAS: faithfulness, context
+- [x] Add a RAG evaluation harness (e.g. RAGAS: faithfulness, context
       precision/recall) against a small fixed eval set of KB questions, so
-      future retrieval/chunking changes have a measurable before/after
-- [ ] Migrate `app/rag.py` off the deprecated `load_qa_chain` to an LCEL
+      future retrieval/chunking changes have a measurable before/after (PR
+      #7, `phase-2/ragas-eval-harness`)
+- [x] Migrate `app/rag.py` off the deprecated `load_qa_chain` to an LCEL
       retrieval chain (`create_retrieval_chain` or a custom
-      `RunnableSequence`), per `Rules.md`
+      `RunnableSequence`), per `Rules.md` (PR #5, `phase-2/lcel-migration`)
 
 ## Phase 3 — Bigger bets
 
