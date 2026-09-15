@@ -32,10 +32,9 @@ settings = replace(settings, provider="openai" if provider_label == "OpenAI API"
 
 
 @st.cache_resource
-def _load_db_and_chain(cache_key: str, settings):
+def _load_qa_chain(cache_key: str, settings):
     db = build_vector_db(settings)
-    chain = build_qa_chain(settings)
-    return db, chain
+    return build_qa_chain(settings, db)
 
 
 def _render_sources(sources: list) -> None:
@@ -50,7 +49,7 @@ def _render_sources(sources: list) -> None:
 
 def start_chatbot(settings, cache_key: str):
     try:
-        db, chain = _load_db_and_chain(cache_key, settings)
+        chain = _load_qa_chain(cache_key, settings)
     except ProviderError as exc:
         st.error(str(exc))
         st.stop()
@@ -72,7 +71,7 @@ def start_chatbot(settings, cache_key: str):
             message_placeholder = st.empty()
             chat_history = st.session_state.messages[:-1]
             full_response = get_answer(
-                st.session_state.messages[-1]["content"], db, chain, chat_history
+                st.session_state.messages[-1]["content"], chain, chat_history
             )
             answer = full_response["answer"]
             sources = full_response["sources"]
