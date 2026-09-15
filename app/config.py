@@ -34,7 +34,7 @@ def load_settings() -> Settings:
         ollama_base_url=os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434"),
         embedding_model=os.environ.get("EMBEDDING_MODEL", "all-MiniLM-L6-v2"),
         chunk_size=int(os.environ.get("CHUNK_SIZE", "1000")),
-        chunk_overlap=int(os.environ.get("CHUNK_OVERLAP", "20")),
+        chunk_overlap=int(os.environ.get("CHUNK_OVERLAP", "150")),
         tmp_dir=os.environ.get("KB_TMP_DIR", "tmp"),
         persist_dir=os.environ.get("CHROMA_PERSIST_DIR", "chroma_db"),
         kb_source_dir=os.environ.get("KB_SOURCE_DIR", "data/kb"),
