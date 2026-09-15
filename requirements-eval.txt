@@ -1,0 +1,17 @@
+# --- RAG evaluation harness (scripts/rag_eval/score.py) ---
+# Deliberately NOT layered on requirements-app.txt: ragas pulls its own
+# langchain-core/langchain-openai versions that conflict with the app's
+# pinned langchain-chroma==0.1.4 / langchain-ollama==0.2.1 (both require
+# langchain-core<0.4). Install this in its own venv, separate from both
+# .venv (app) and the notebook stack - see scripts/rag_eval/README.md.
+ragas==0.1.21
+
+# --judge-provider ollama pulls langchain-ollama transitively, but the
+# app's own langchain-ollama==0.2.1 is built against pydantic-v2-native
+# langchain-core (>=0.3) and silently breaks under ragas' langchain-core
+# 0.2.43 (still a pydantic-v1 shim): ChatOllama's PrivateAttr client never
+# gets initialized, so every judge call fails with
+# AttributeError("'ModelPrivateAttr' object has no attribute 'chat'") and
+# ragas swallows it into NaN scores. Pin the last 0.1.x release, which
+# targets langchain-core<0.3 and initializes its client correctly there.
+langchain-ollama==0.1.3

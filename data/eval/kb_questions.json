@@ -1,0 +1,22 @@
+[
+  {
+    "question": "What sizes are Adult T Shirts available in?",
+    "ground_truth": "Adult T Shirts for Men and Women are available in sizes S, M, L, XL, XXL."
+  },
+  {
+    "question": "What colors are Adult T Shirts available in?",
+    "ground_truth": "White, black, navy, light steel, deep royal, deep red, smoke gray and ash."
+  },
+  {
+    "question": "Which regions can order the apparel products?",
+    "ground_truth": "AU, CA, EU, NZ, and US."
+  },
+  {
+    "question": "What is the minimum and maximum order quantity for apparel products?",
+    "ground_truth": "A minimum of 1 piece and a maximum of 50 pieces per order."
+  },
+  {
+    "question": "Is the paper print service available in Russia and South Korea?",
+    "ground_truth": "Yes, print service in Russia and South Korea is temporarily available until further notice."
+  }
+]
