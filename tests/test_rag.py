@@ -4,6 +4,8 @@ Embeddings/chat models are stubbed per Rules.md: never hit a real
 embeddings download or LLM API in tests, mock at the provider boundary.
 """
 
+from types import SimpleNamespace
+
 from langchain_core.documents import Document
 
 import app.rag as rag
@@ -28,10 +30,24 @@ class _FakeEmbeddings:
         return self._embed(text)
 
 
+class _StubLLM:
+    """Stands in for chain.llm_chain.llm - the model used to condense a
+    follow-up question into a standalone one from chat history."""
+
+    def __init__(self, condensed: str):
+        self.condensed = condensed
+        self.prompts = []
+
+    def invoke(self, prompt):
+        self.prompts.append(prompt)
+        return SimpleNamespace(content=self.condensed)
+
+
 class _StubChain:
-    def __init__(self, answer: str):
+    def __init__(self, answer: str, llm=None):
         self.answer = answer
         self.calls = []
+        self.llm_chain = SimpleNamespace(llm=llm)
 
     def run(self, input_documents, question):
         self.calls.append({"input_documents": input_documents, "question": question})
@@ -74,6 +90,36 @@ def test_get_answer_with_no_matches_returns_empty_sources():
 
     assert result["sources"] == []
     assert chain.calls[0]["input_documents"] == []
+
+
+def test_get_answer_condenses_followup_question_using_chat_history():
+    doc = Document(
+        page_content="Available in blue and black.",
+        metadata={"source": "apparel_products.txt"},
+    )
+    db = _StubDb([(doc, 0.2)])
+    llm = _StubLLM("What colors does the cotton t-shirt come in?")
+    chain = _StubChain("It comes in blue and black.", llm=llm)
+    chat_history = [
+        {"role": "user", "content": "Tell me about the cotton t-shirt."},
+        {"role": "assistant", "content": "It's a 100% cotton t-shirt in sizes S-XL."},
+    ]
+
+    result = rag.get_answer("What about colors?", db, chain, chat_history)
+
+    assert llm.prompts, "expected the condense-question prompt to be invoked"
+    assert db.queries == ["What colors does the cotton t-shirt come in?"]
+    assert chain.calls[0]["question"] == "What colors does the cotton t-shirt come in?"
+    assert result["answer"] == "It comes in blue and black."
+
+
+def test_get_answer_skips_condensing_without_chat_history():
+    db = _StubDb([])
+    chain = _StubChain("Sure.")
+
+    rag.get_answer("A first question with no history.", db, chain, chat_history=[])
+
+    assert db.queries == ["A first question with no history."]
 
 
 def _settings(tmp_path, **overrides):

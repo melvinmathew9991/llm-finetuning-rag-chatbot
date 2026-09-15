@@ -70,7 +70,10 @@ def start_chatbot(settings, cache_key: str):
 
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
-            full_response = get_answer(st.session_state.messages[-1]["content"], db, chain)
+            chat_history = st.session_state.messages[:-1]
+            full_response = get_answer(
+                st.session_state.messages[-1]["content"], db, chain, chat_history
+            )
             answer = full_response["answer"]
             sources = full_response["sources"]
             message_placeholder.markdown(answer)
