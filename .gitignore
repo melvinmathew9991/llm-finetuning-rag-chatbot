@@ -44,3 +44,7 @@ models/peft/scheduler.pt
 models/peft/rng_state.pth
 models/peft/trainer_state.json
 models/peft/training_args.bin
+# 14MB adapter weights - was tracked (small, directly useful), but that's
+# still a binary artifact reproducible from the notebook; stop growing
+# .git with it going forward. Not rewriting existing history over it.
+models/peft/adapter_model.bin
