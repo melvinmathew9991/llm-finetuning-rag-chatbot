@@ -59,7 +59,10 @@ Medium effort. Depends on nothing in Phase 1; can run in parallel.
 - [x] Run a small LoRA sweep (`r`, `target_modules`, alpha/r ratio) and log
       ROUGE vs. trainable-param% in the notebook as a comparison table (PR #9,
       `phase-2/lora-sweep`)
-- [ ] Try QLoRA (4-bit base + LoRA) as an additional efficiency comparison
+- [x] Try QLoRA (4-bit base + LoRA) as an additional efficiency comparison
+      (PR #10, `phase-2/qlora-comparison`; gated on `torch.cuda.is_available()`
+      since bitsandbytes 4-bit has no CPU kernel - untested on real GPU
+      hardware)
 - [x] Add a RAG evaluation harness (e.g. RAGAS: faithfulness, context
       precision/recall) against a small fixed eval set of KB questions, so
       future retrieval/chunking changes have a measurable before/after (PR
