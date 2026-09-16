@@ -33,8 +33,9 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
   artifact. **Status: Open**
 - **[LOW] 13 broken `../assets/images/...` references** in the notebook's
   RNN/LSTM/attention/decoding sections, left over from the `assets/images/`
-  folder removed in `59a53c5`. README's Project Structure tree still lists
-  `assets/` too. **Status: Open**
+  folder removed in `59a53c5`. **Status: Open** (README's stale
+  `assets/images/` tree entry is fixed - see docs drift below - but the 13
+  broken `<img>` tags inside the notebook itself are untouched)
 
 ### Git hygiene
 
@@ -45,19 +46,28 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
 
 ### Documentation drift
 
-- **[MEDIUM] `docs/Architecture.md` request-flow diagram is stale** — still
-  shows `load_qa_chain`/`chain.run(...)` (replaced by the Phase 2 LCEL
-  migration) and says sources aren't rendered in the UI (done in Phase 1).
-  Folder structure is missing `scripts/`, `data/eval/`,
-  `requirements-eval.txt`. Fine-tuning pipeline diagram doesn't mention
-  `REAL_TRAINING`, the LoRA sweep, or QLoRA. **Status: Open**
-- **[MEDIUM] `docs/PRD.md` stale in two places** — "Out of scope" still
-  lists multi-turn memory as unbuilt (done, PR #4); "Success criteria"
-  still calls real training "blocked" (resolved, Phase 2). **Status: Open**
-- **[LOW] `README.md` Tech Stack / Project Structure don't mention**
+- **[MEDIUM] `docs/Architecture.md` request-flow diagram was stale** — used
+  to show `load_qa_chain`/`chain.run(...)` (replaced by the Phase 2 LCEL
+  migration) and said sources weren't rendered in the UI (done in Phase 1).
+  Folder structure was missing `scripts/`, `data/eval/`,
+  `requirements-eval.txt`; also had a pre-existing, unrelated inaccuracy
+  listing `PRD.md`/`Architecture.md`/`Rules.md`/`Phases.md` at repo root
+  instead of under `docs/`. **Status: Fixed** - request-flow diagram, both
+  pipeline diagrams, and the folder tree all updated to match current code.
+- **[MEDIUM] `docs/PRD.md` was stale in two places** — "Out of scope" still
+  listed multi-turn memory as unbuilt (done, PR #4); "Success criteria"
+  still called real training "blocked" (resolved, Phase 2, though the
+  `trainer.save_model(...)` gap below means it's not fully true yet
+  either). **Status: Fixed** - both sections updated; Core Features also
+  gained the conversation-memory and RAG-eval-harness bullets it was
+  missing.
+- **[LOW] `README.md` Tech Stack / Project Structure didn't mention**
   `bitsandbytes`, the RAG eval harness (`scripts/rag_eval/`,
   `requirements-eval.txt`, `data/eval/`), or the LoRA sweep/QLoRA notebook
-  sections. **Status: Open**
+  sections; Project Structure also still listed the removed `assets/images/`
+  folder. **Status: Fixed** - Tech Stack, Project Structure, and the
+  Fine-tuning section updated; added a new "RAG evaluation harness"
+  subsection since it had no top-level README coverage at all before.
 
 ### Methodology rigor (fine-tuning + eval)
 
@@ -119,3 +129,5 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
   discarded, not committed. Re-ran with a real OpenAI key once the user set
   one: clean run, all four metrics improved or held, confirming the
   duplicate-embedding bug had been suppressing them.
+- 2026-09-16: Synced `docs/Architecture.md`, `docs/PRD.md`, and `README.md`
+  to current repo state, closing all three documentation-drift findings.

@@ -13,9 +13,10 @@ The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT
 ## Tech Stack
 
 - **Language:** Python 3.8
-- **Fine-tuning:** PyTorch, Hugging Face `transformers`, `datasets`, `evaluate`/`rouge_score`, `peft`/`loralib` (LoRA)
+- **Fine-tuning:** PyTorch, Hugging Face `transformers`, `datasets`, `evaluate`/`rouge_score`, `peft`/`loralib` (LoRA), `bitsandbytes` (QLoRA, 4-bit)
 - **Base model:** `google/flan-t5-base`
 - **RAG / chatbot:** LangChain (`langchain`, `langchain-community`, `langchain-openai`, `langchain-ollama`, `langchain-chroma`, `langchain-text-splitters`), ChromaDB (vector store), `sentence-transformers` (`all-MiniLM-L6-v2` embeddings)
+- **RAG evaluation:** `ragas` (faithfulness, answer relevancy, context precision/recall) - see `scripts/rag_eval/`
 - **LLM providers:** OpenAI API (GPT-3.5 Turbo) or local Ollama
 - **App/UI:** Streamlit
 - **Testing/CI:** pytest, GitHub Actions
@@ -30,6 +31,7 @@ The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT
 ├── requirements-notebook.txt    # Fine-tuning notebook stack only (heavy: torch, transformers...)
 ├── requirements-app.txt         # RAG chatbot app stack only (lightweight)
 ├── requirements-dev.txt         # Adds pytest on top of requirements-app.txt
+├── requirements-eval.txt        # RAG eval harness only (ragas, own isolated venv)
 ├── .github/workflows/tests.yml  # CI: runs pytest on push/PR
 ├── .gitignore
 ├── .gitattributes
@@ -40,19 +42,21 @@ The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT
 │   ├── providers.py             #   OpenAI <-> local Ollama model selection
 │   ├── ingestion.py             #   Load + chunk the knowledge-base docs
 │   └── rag.py                   #   Vector store + retrieval-QA chain
-├── tests/                       # pytest unit tests for app/
+├── tests/                       # pytest unit tests for app/ and scripts/rag_eval/
+├── scripts/
+│   └── rag_eval/                # RAG evaluation harness (ragas) - see its own README.md
 ├── notebooks/
-│   └── llm_labs.ipynb          # Main walkthrough: fundamentals -> prompting ->
-│                                # full fine-tuning -> LoRA/PEFT -> RAG
+│   └── llm_labs.ipynb          # Main walkthrough: fundamentals -> prompting -> full fine-tuning
+│                                # -> LoRA/PEFT -> LoRA sweep -> QLoRA -> RAG
 ├── data/
-│   └── kb/                     # Sample knowledge-base docs for the chatbot demo
-│       ├── apparel_products.txt
-│       └── paper_products.txt
+│   ├── kb/                     # Sample knowledge-base docs for the chatbot demo
+│   │   ├── apparel_products.txt
+│   │   └── paper_products.txt
+│   └── eval/                   # Fixed eval question set + checked-in eval harness output
 ├── models/
 │   ├── full/                   # Full fine-tuned FLAN-T5-base checkpoint (config only - see note)
 │   └── peft/                   # LoRA/PEFT adapter checkpoint
-└── assets/
-    └── images/                 # Diagrams referenced by the notebook
+└── docs/                       # PRD, Architecture, Rules, Phases, Audit
 ```
 
 > Note: `models/` only tracks what's small and either directly useful or
@@ -192,6 +196,22 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
+### RAG evaluation harness
+
+Measures whether retrieval/chunking changes actually help or hurt, using
+[ragas](https://github.com/explodinggradients/ragas) (faithfulness, answer
+relevancy, context precision/recall) against a small fixed set of KB
+questions. Runs in its own isolated venv, separate from `requirements-app.txt`
+- see `scripts/rag_eval/README.md` for why and for the full usage.
+
+```
+python -m venv .venv-eval
+.venv-eval/Scripts/pip install -r requirements-eval.txt
+
+python -m scripts.rag_eval.generate   # app's own venv - real answers via app.rag
+.venv-eval/Scripts/python -m scripts.rag_eval.score   # ragas venv - scores them
+```
+
 ### Fine-tuning
 
 `notebooks/llm_labs.ipynb` walks through both full fine-tuning and
@@ -221,3 +241,15 @@ To actually fine-tune for real:
    already exist
 4. Re-run the qualitative and ROUGE evaluation cells to compare against
    the base model
+
+Two further comparisons build on the single LoRA run above, both also
+gated on `REAL_TRAINING=1`:
+- **LoRA hyperparameter sweep** - 5 configs varying `r`, `target_modules`,
+  and the `lora_alpha`/`r` ratio, logging ROUGE next to trainable-param% in
+  a comparison table
+- **QLoRA (4-bit base + LoRA)** - quantizes the base model to 4-bit via
+  `bitsandbytes` and attaches the same LoRA config as the single run above,
+  reporting base-model memory footprint alongside ROUGE. Needs a CUDA GPU
+  (bitsandbytes 4-bit has no CPU kernel) - additionally gated on
+  `torch.cuda.is_available()`, so it's skipped with a clear message on a
+  CPU-only machine
