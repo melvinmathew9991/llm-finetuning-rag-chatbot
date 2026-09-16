@@ -59,17 +59,18 @@ The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT
 └── docs/                       # PRD, Architecture, Rules, Phases, Audit
 ```
 
-> Note: `models/` only tracks what's small and either directly useful or
-> documents the setup: configs, LoRA hyperparameters, and the LoRA adapter
-> weights themselves (`models/peft/adapter_model.bin`, ~14MB). Everything
-> else - optimizer/scheduler/rng state, the full fine-tune's 990MB
-> `pytorch_model.bin`, and the raw per-step training logs - is gitignored:
-> reproducible by re-running the fine-tuning cells in the notebook, not
-> needed for inference, and (for `training_args.bin`) a pickle file with
-> no real reason to carry it in version control. **This means
-> `models/full/` alone cannot be loaded as-is from a fresh clone** — you
-> need to actually run the full fine-tuning cells in the notebook (see
-> "Fine-tuning" below) to regenerate `pytorch_model.bin`.
+> Note: `models/` only tracks what's small and documents the setup -
+> configs and LoRA hyperparameters. Everything else - optimizer/scheduler/
+> rng state, the full fine-tune's 990MB `pytorch_model.bin`, the LoRA
+> adapter's 14MB `adapter_model.bin`, and the raw per-step training logs -
+> is gitignored: reproducible by re-running the fine-tuning cells in the
+> notebook, not needed for inference, and (for `training_args.bin`) a
+> pickle file with no real reason to carry it in version control. **This
+> means neither `models/full/` nor `models/peft/` can be loaded as-is
+> from a fresh clone** — you need to actually run the fine-tuning cells in
+> the notebook (see "Fine-tuning" below) to regenerate the weight files.
+> (`adapter_model.bin` was tracked in git history up through this commit -
+> it's untracked going forward, but still present in old commits/tags.)
 
 ## Execution Instructions
 
