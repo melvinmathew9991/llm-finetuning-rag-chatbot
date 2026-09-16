@@ -56,8 +56,9 @@ Medium effort. Depends on nothing in Phase 1; can run in parallel.
       `dialogsum` than the current ~124-row subsample (PR #6,
       `phase-2/enable-real-training`; subsample loosened from every 100th
       row to every 20th, ~623 rows, in a follow-up commit on main)
-- [ ] Run a small LoRA sweep (`r`, `target_modules`, alpha/r ratio) and log
-      ROUGE vs. trainable-param% in the notebook as a comparison table
+- [x] Run a small LoRA sweep (`r`, `target_modules`, alpha/r ratio) and log
+      ROUGE vs. trainable-param% in the notebook as a comparison table (PR #9,
+      `phase-2/lora-sweep`)
 - [ ] Try QLoRA (4-bit base + LoRA) as an additional efficiency comparison
 - [x] Add a RAG evaluation harness (e.g. RAGAS: faithfulness, context
       precision/recall) against a small fixed eval set of KB questions, so
