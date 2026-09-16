@@ -69,6 +69,10 @@ def test_chat_flow_renders_answer_and_sources(tmp_path, monkeypatch):
     )
 
     at = AppTest.from_file("app/main.py")
+    # AppTest's default 3s per-run timeout is tight for a real (if faked)
+    # embed -> Chroma -> LCEL chain round trip on a cold CI runner - bump it
+    # rather than risk a flaky RuntimeError("... timed out after 3(s)").
+    at.default_timeout = 30
     at.run()
 
     assert not at.exception
