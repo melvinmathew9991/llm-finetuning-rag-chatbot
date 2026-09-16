@@ -23,9 +23,8 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
   collection already existed at `persist_dir` instead of replacing it.
   Confirmed live: `chroma_db/chroma.sqlite3` had 4 embeddings for 2 unique
   KB docs; visible in the duplicated `contexts` in `data/eval/scores.json`.
-  **Status: In progress** - fix pushed on `fix/chroma-duplicate-embeddings`
-  (drops the collection via Chroma's own API before rebuilding), PR open,
-  not yet merged.
+  **Status: Fixed** (PR #11, `fix/chroma-duplicate-embeddings`) - drops the
+  collection via Chroma's own API before rebuilding.
 - **[MEDIUM] `REAL_TRAINING=1` never saves a checkpoint** — neither
   `Trainer.train()` call in the notebook is followed by
   `trainer.save_model(...)`, so real training produces weights that are
@@ -89,10 +88,9 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
   heuristic on short factual answers rather than a real failure, but
   unexplained in-repo. **Status: Open**
 - Checked-in `data/eval/scores.json` was generated against a KB with
-  duplicated embeddings (see the HIGH bug above) - numbers should be
-  regarded as unreliable until regenerated. **Status: Open** (blocked on
-  the duplicate-embedding fix merging, then re-run
-  `scripts/rag_eval/generate.py` + `score.py`)
+  duplicated embeddings (see the HIGH bug above, now fixed by PR #11) -
+  numbers should be regarded as unreliable until regenerated. **Status:
+  Open** - re-run `scripts/rag_eval/generate.py` + `score.py` to refresh.
 
 ### Test coverage
 
@@ -104,5 +102,7 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
 ## Changelog
 
 - 2026-09-16: Initial audit performed; this file created with all findings
-  above. Fix branch `fix/chroma-duplicate-embeddings` pushed same day for
-  the HIGH duplicate-embedding bug; PR open, not yet merged.
+  above.
+- 2026-09-16: PR #11 (`fix/chroma-duplicate-embeddings`) merged, fixing the
+  HIGH duplicate-embedding bug. `data/eval/scores.json` still needs
+  regenerating against the fixed retrieval path.
