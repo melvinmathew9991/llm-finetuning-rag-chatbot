@@ -82,15 +82,21 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
   chars) are under the default `CHUNK_SIZE=1000`, so each is exactly one
   chunk. Phase 1's `CHUNK_OVERLAP` tuning (20→150) has zero observable
   effect on this KB. **Status: Open**
-- **[uncertain] `answer_relevancy` is exactly 0.0 for 2/5 eval questions**
-  in `data/eval/scores.json`, dragging the mean to 0.39 vs. faithfulness
-  0.81/context_precision 0.94. Likely ragas' "noncommittal answer"
-  heuristic on short factual answers rather than a real failure, but
-  unexplained in-repo. **Status: Open**
+- **[uncertain→confirmed] `answer_relevancy` anomaly was mostly the
+  duplicate-embedding bug, not a ragas quirk.** After regenerating against
+  the fixed retrieval path, 4/5 questions now score 0.96-1.0; only the
+  Russia/South Korea yes/no question still scores exactly 0.0, which does
+  match ragas' "noncommittal answer" heuristic on short direct answers.
+  **Status: Fixed** (isolated to one explainable case, not a pervasive
+  issue).
 - Checked-in `data/eval/scores.json` was generated against a KB with
-  duplicated embeddings (see the HIGH bug above, now fixed by PR #11) -
-  numbers should be regarded as unreliable until regenerated. **Status:
-  Open** - re-run `scripts/rag_eval/generate.py` + `score.py` to refresh.
+  duplicated embeddings (see the HIGH bug above, fixed by PR #11).
+  **Status: Fixed** - regenerated 2026-09-16 against the fixed retrieval
+  path with the real OpenAI judge (gpt-4o-mini): faithfulness 0.807→1.000,
+  answer_relevancy 0.392→0.788, context_recall 0.680→1.000,
+  context_precision 0.944→0.900 (small drop, expected - precision is more
+  sensitive to ranking now that there's no duplicate padding). Confirms the
+  bug was suppressing these metrics, not just adding noise.
 
 ### Test coverage
 
@@ -104,5 +110,12 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
 - 2026-09-16: Initial audit performed; this file created with all findings
   above.
 - 2026-09-16: PR #11 (`fix/chroma-duplicate-embeddings`) merged, fixing the
-  HIGH duplicate-embedding bug. `data/eval/scores.json` still needs
-  regenerating against the fixed retrieval path.
+  HIGH duplicate-embedding bug.
+- 2026-09-16: Regenerated `data/eval/results.json` + `scores.json` against
+  the fixed retrieval path. First attempt with the default OpenAI judge
+  failed (`.env`'s `OPENAI_API_KEY` was still the unfilled `sk-...`
+  placeholder); a `--judge-provider ollama` fallback with the local
+  `llama3.2:3b` model mostly timed out and returned `faithfulness: nan` -
+  discarded, not committed. Re-ran with a real OpenAI key once the user set
+  one: clean run, all four metrics improved or held, confirming the
+  duplicate-embedding bug had been suppressing them.
