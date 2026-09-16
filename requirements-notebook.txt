@@ -27,3 +27,9 @@ huggingface_hub==0.25.2
 accelerate==0.21.0
 numpy==1.26.4
 pyarrow==13.0.0
+# pinned: 0.43.3 is the earliest release with an official win_amd64 wheel on
+# PyPI, so `pip install` succeeds on Windows without a CUDA toolkit or a
+# compiler - the QLoRA notebook section still needs an actual CUDA GPU at
+# runtime (bitsandbytes 4-bit has no CPU kernel) and checks
+# torch.cuda.is_available() itself before using it.
+bitsandbytes==0.43.3
