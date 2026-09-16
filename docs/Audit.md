@@ -124,7 +124,11 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
 - **[LOW] `app/main.py` has zero tests** - every other `app/` module has
   one per Rules.md's own convention; the actual Streamlit entry point
   (KB upload, cache-key construction, source rendering, session state)
-  doesn't. **Status: Open**
+  doesn't. **Status: Fixed** (PR #14, `fix/main-test-coverage`) - added
+  `tests/test_main.py` using Streamlit's `AppTest` harness, covering the
+  no-KB placeholder state and the full chat happy path (sidebar KB
+  listing, sent message, rendered answer + sources expander). Verified
+  both tests fail against a deliberately reintroduced bug first.
 
 ## Changelog
 
@@ -147,3 +151,5 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
   plus adds the unmatched-hyperparameters caveat note.
 - 2026-09-16: PR #13 (`fix/notebook-broken-image-links`) merged - closes
   the broken-image-references finding.
+- 2026-09-16: PR #14 (`fix/main-test-coverage`) merged - closes the
+  app/main.py test-coverage finding.
