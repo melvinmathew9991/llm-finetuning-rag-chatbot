@@ -36,9 +36,10 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
   `max_steps=1` smoke-test path leaves the existing checkpoints untouched.
 - **[LOW] 13 broken `../assets/images/...` references** in the notebook's
   RNN/LSTM/attention/decoding sections, left over from the `assets/images/`
-  folder removed in `59a53c5`. **Status: Open** (README's stale
-  `assets/images/` tree entry is fixed - see docs drift below - but the 13
-  broken `<img>` tags inside the notebook itself are untouched)
+  folder removed in `59a53c5`. **Status: Fixed** (PR #13,
+  `fix/notebook-broken-image-links`) - deleted the 8 cells whose entire
+  content was just a broken image tag; surgically stripped the 5 `<img>`
+  blocks embedded in the RNN/LSTM cells, preserving all surrounding text.
 
 ### Git hygiene
 
@@ -144,3 +145,5 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
 - 2026-09-16: PR #12 (`fix/notebook-training-rigor`) merged - closes the
   missing `save_model`, no-seed, and no-best-checkpoint-selection findings,
   plus adds the unmatched-hyperparameters caveat note.
+- 2026-09-16: PR #13 (`fix/notebook-broken-image-links`) merged - closes
+  the broken-image-references finding.
