@@ -41,7 +41,7 @@
 
 ## Tech stack
 
-See `README.md` → **Tech Stack** for the full list. Summary: Python 3.8,
+See `README.md` → **Tech Stack** for the full list. Summary: Python 3.10,
 PyTorch + Hugging Face (`transformers`, `peft`, `datasets`, `evaluate`) for
 fine-tuning; LangChain + ChromaDB + `sentence-transformers` for RAG; Streamlit
 for the UI; OpenAI API or local Ollama as swappable chat providers; pytest +

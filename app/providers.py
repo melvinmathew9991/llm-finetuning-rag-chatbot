@@ -3,7 +3,7 @@
 import os
 
 import requests
-from langchain_community.embeddings import SentenceTransformerEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import ChatOllama
 from langchain_openai import ChatOpenAI
 
@@ -38,7 +38,7 @@ def get_chat_model(settings: Settings):
 
 def get_embeddings(settings: Settings):
     # Kept local regardless of provider - free, no API key or Ollama pull needed.
-    return SentenceTransformerEmbeddings(model_name=settings.embedding_model)
+    return HuggingFaceEmbeddings(model_name=settings.embedding_model)
 
 
 def _ollama_is_reachable(base_url: str) -> bool:
