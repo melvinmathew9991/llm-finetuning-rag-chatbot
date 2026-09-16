@@ -20,9 +20,21 @@ from app.providers import get_chat_model, get_embeddings
 
 
 def build_vector_db(settings: Settings):
+    """Builds a fresh Chroma store from the current KB contents.
+
+    Drops any existing collection at persist_dir first via Chroma's own API
+    - Chroma.from_documents() adds to whatever collection is already there
+    rather than replacing it, so without this every rebuild (app restart,
+    re-running the eval harness, switching KB content and back) would
+    silently double up the same chunks in the persisted store. Going
+    through delete_collection() rather than shutil.rmtree(persist_dir)
+    matters on Windows: rmtree-ing a still-open Chroma persistent client's
+    directory raises PermissionError on its on-disk index files.
+    """
     documents = load_docs(settings.tmp_dir)
     docs = split_docs(documents, settings.chunk_size, settings.chunk_overlap)
     embeddings = get_embeddings(settings)
+    Chroma(persist_directory=settings.persist_dir, embedding_function=embeddings).delete_collection()
     return Chroma.from_documents(docs, embeddings, persist_directory=settings.persist_dir)
 
 

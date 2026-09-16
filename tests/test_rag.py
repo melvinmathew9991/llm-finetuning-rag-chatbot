@@ -134,6 +134,20 @@ def test_build_vector_db_returns_queryable_store(tmp_path, monkeypatch):
     assert "cotton t-shirt" in results[0].page_content
 
 
+def test_build_vector_db_rebuild_does_not_duplicate_existing_data(tmp_path, monkeypatch):
+    kb_dir = tmp_path / "kb"
+    kb_dir.mkdir()
+    (kb_dir / "shirts.txt").write_text("A cotton t-shirt available in sizes S, M, L, XL.")
+
+    monkeypatch.setattr(rag, "get_embeddings", lambda settings: _FakeEmbeddings())
+
+    settings = _settings(tmp_path)
+    rag.build_vector_db(settings)
+    db = rag.build_vector_db(settings)
+
+    assert db._collection.count() == 1
+
+
 def test_build_qa_chain_condenses_followup_using_chat_history(tmp_path, monkeypatch):
     doc = Document(
         page_content="Available in blue and black.",
