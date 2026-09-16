@@ -102,7 +102,28 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
 - **[LOW] Demo KB never exercises chunking** - both KB files (974, 412
   chars) are under the default `CHUNK_SIZE=1000`, so each is exactly one
   chunk. Phase 1's `CHUNK_OVERLAP` tuning (20→150) has zero observable
-  effect on this KB. **Status: Open**
+  effect on this KB. **Status: Fixed** (PR #15,
+  `feat/exercise-kb-chunking`) - extended `apparel_products.txt` with a
+  Care/Fulfillment paragraph appended into the same paragraph (974→1589
+  chars), forcing a genuine mid-paragraph split rather than a clean
+  paragraph-boundary cut; now 3 chunks with a real ~148-char overlap
+  (target 150), verified directly. All existing facts untouched, so
+  `kb_questions.json`'s ground truths still hold. Regenerated
+  `data/eval/results.json`/`scores.json` against it: faithfulness/
+  answer_relevancy/context_recall held steady, context_precision dropped
+  0.900→0.750 (expected - more unique chunks at fixed `k=4` means a
+  higher share of marginally-relevant retrieved chunks per question, not
+  a regression).
+- PR #15's merge commit failed CI (`RuntimeError: AppTest script run
+  timed out after 3(s)` in `test_chat_flow_renders_answer_and_sources`)
+  even though the PR's own branch CI had passed - a real embed→Chroma→
+  LCEL round trip exceeded `AppTest`'s 3s default on a cold CI runner.
+  Didn't reproduce locally in either the existing venv or a byte-for-byte
+  fresh one, ruling out dependency drift - purely CI-hardware-speed
+  related. **Status: Fixed** (PR #16, `fix/apptest-ci-timeout`) - sets
+  `at.default_timeout = 30` before the chain-building run; confirmed via
+  CI logs (not just local reasoning) that this resolves it, and confirmed
+  it doesn't add local run time (it's a ceiling, not a wait).
 - **[uncertain→confirmed] `answer_relevancy` anomaly was mostly the
   duplicate-embedding bug, not a ragas quirk.** After regenerating against
   the fixed retrieval path, 4/5 questions now score 0.96-1.0; only the
@@ -153,3 +174,9 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
   the broken-image-references finding.
 - 2026-09-16: PR #14 (`fix/main-test-coverage`) merged - closes the
   app/main.py test-coverage finding.
+- 2026-09-16: PR #15 (`feat/exercise-kb-chunking`) merged - closes the
+  demo-KB-chunking finding, but its merge commit broke CI on `main`
+  (branch CI had passed; the merge commit didn't - see PR #16).
+- 2026-09-16: PR #16 (`fix/apptest-ci-timeout`) merged - fixes the
+  AppTest timeout flake introduced by PR #14/surfaced by PR #15's merge.
+  `main`'s CI is green again as of this commit.
