@@ -30,7 +30,10 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
   `trainer.save_model(...)`, so real training produces weights that are
   immediately discarded. Self-documented in `README.md`. The Phase 2
   "enable real training" item is checked off but doesn't deliver a usable
-  artifact. **Status: Open**
+  artifact. **Status: Fixed** (PR #12, `fix/notebook-training-rigor`) -
+  both cells now call `trainer.save_model(...)`/
+  `tokenizer.save_pretrained(...)`, gated on `REAL_TRAINING` so the
+  `max_steps=1` smoke-test path leaves the existing checkpoints untouched.
 - **[LOW] 13 broken `../assets/images/...` references** in the notebook's
   RNN/LSTM/attention/decoding sections, left over from the `assets/images/`
   folder removed in `59a53c5`. **Status: Open** (README's stale
@@ -79,12 +82,19 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
   (`transformers.set_seed`/`torch.manual_seed`) - training and
   sampling-based generation aren't reproducible run-to-run, undercutting
   PRD.md's own "reproduce the documented ROUGE deltas" criterion.
-  **Status: Open**
+  **Status: Fixed** (PR #12, `fix/notebook-training-rigor`) - `set_seed(42)`
+  added right after the `REAL_TRAINING` flag, before any training/sampling
+  cell runs.
 - **[LOW] No validation-based checkpoint selection or early stopping** -
   `eval_dataset` is wired into `Trainer` but nothing acts on the eval-loss
-  trend. **Status: Open**
+  trend. **Status: Fixed** (PR #12) - both `TrainingArguments` cells now
+  set `evaluation_strategy`/`save_strategy`/`load_best_model_at_end`/
+  `metric_for_best_model` when `REAL_TRAINING` is set (verified both
+  branches construct cleanly against the pinned transformers==4.33.3).
 - **[LOW] Full-FT vs. PEFT vs. QLoRA aren't matched conditions** (different
-  LR/epoch counts) and the notebook doesn't caveat this. **Status: Open**
+  LR/epoch counts) and the notebook doesn't caveat this. **Status: Fixed**
+  (PR #12) - added a markdown note explaining this demonstrates each
+  method, not a controlled ablation.
 
 ### RAG design
 
@@ -131,3 +141,6 @@ runtime state where possible (live `chroma_db/`, checked-in eval artifacts,
   duplicate-embedding bug had been suppressing them.
 - 2026-09-16: Synced `docs/Architecture.md`, `docs/PRD.md`, and `README.md`
   to current repo state, closing all three documentation-drift findings.
+- 2026-09-16: PR #12 (`fix/notebook-training-rigor`) merged - closes the
+  missing `save_model`, no-seed, and no-best-checkpoint-selection findings,
+  plus adds the unmatched-hyperparameters caveat note.
