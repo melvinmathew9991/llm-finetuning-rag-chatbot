@@ -67,7 +67,7 @@ production deployment.
 
 ## Key constraints
 
-- Python 3.8.10 (pinned dependency versions assume this)
+- Python 3.10 (pinned dependency versions assume this; matches CI and the app's own `.venv`)
 - Fine-tuning stack (`torch`, `transformers`, `peft`, ...) is heavy and kept
   separate from the lightweight app stack — see `requirements-*.txt`
 - Large model artifacts (full fine-tune weights, optimizer/scheduler state) are

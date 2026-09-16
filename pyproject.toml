@@ -2,7 +2,7 @@
 name = "llm-finetuning-rag-chatbot"
 version = "0.1.0"
 description = "LLM fine-tuning (full + LoRA/PEFT) notebook and a RAG shopping chatbot (OpenAI/Ollama)"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

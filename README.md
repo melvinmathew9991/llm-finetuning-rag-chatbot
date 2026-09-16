@@ -12,7 +12,7 @@ The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT
 
 ## Tech Stack
 
-- **Language:** Python 3.8
+- **Language:** Python 3.10
 - **Fine-tuning:** PyTorch, Hugging Face `transformers`, `datasets`, `evaluate`/`rouge_score`, `peft`/`loralib` (LoRA), `bitsandbytes` (QLoRA, 4-bit)
 - **Base model:** `google/flan-t5-base`
 - **RAG / chatbot:** LangChain (`langchain`, `langchain-community`, `langchain-openai`, `langchain-ollama`, `langchain-chroma`, `langchain-text-splitters`), ChromaDB (vector store), `sentence-transformers` (`all-MiniLM-L6-v2` embeddings)
@@ -74,7 +74,7 @@ The project also applies Retrieval Augmented Generation (RAG) using OpenAI's GPT
 
 ## Execution Instructions
 
-### Python version 3.8.10
+### Python version 3.10
 
 To create a virtual environment and install requirements, pick the file that
 matches what you want to run - installing only what you need avoids pulling
@@ -104,10 +104,10 @@ source myenv/bin/activate
 pip install -r requirements-app.txt
 ```
 
-If you have multiple Python versions installed, use the Python Launcher to target 3.8.10 specifically:
+If you have multiple Python versions installed, use the Python Launcher to target 3.10 specifically:
 
-- Windows: `py -3.8 -m venv myenv`
-- Linux/Mac: `python3.8 -m venv myenv`
+- Windows: `py -3.10 -m venv myenv`
+- Linux/Mac: `python3.10 -m venv myenv`
 
 then activate and install the requirements file for what you're running, as above.
 
